@@ -34,19 +34,21 @@ namespace std
             unique_ptr(const unique_ptr&) = delete;
             unique_ptr& operator=(const unique_ptr&) = delete;
 
-            unique_ptr(unique_ptr&& other)
+            template <typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
+            unique_ptr(unique_ptr<U>&& other)
             {
-                _data = other._data;
-                other._data = nullptr;
+                _data = other.get();
+                other.clear();
             }
 
-            unique_ptr& operator=(unique_ptr&& other)
+            template <typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
+            unique_ptr& operator=(unique_ptr<U>&& other)
             {
-                _data = other._data;
-                other._data = nullptr;
+                _data = other.get();
+                other.clear();
                 return *this;
             }
-            
+
             ~unique_ptr()
             {
                 if (_data != nullptr)
@@ -67,6 +69,11 @@ namespace std
             decltype(_data) get() const
             {
                 return _data;
+            }
+
+            void clear()
+            {
+                _data = nullptr;
             }
     };
 

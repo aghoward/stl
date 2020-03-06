@@ -243,4 +243,17 @@ namespace std {
 
     template <typename T>
     static constexpr bool is_copy_constructible_v = is_copy_constructible<T>::value;
+
+    template <typename TBase, typename TDerived>
+    struct is_base_of
+    {
+        static constexpr std::true_type matches(const volatile TBase*);
+        static constexpr std::false_type matches(const volatile void*);
+
+        using type = decltype(matches(std::declval<TDerived*>()));
+        static constexpr bool value = type::value;
+    };
+
+    template <typename TBase, typename TDerived>
+    static constexpr bool is_base_of_v = is_base_of<TBase, TDerived>::value; 
 }
